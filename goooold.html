@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.7.0/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a3e, #4a148c);
+            color: #fff;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .name-input {
+            margin: 20px 0;
+            padding: 10px;
+            width: 100%;
+            max-width: 300px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+        }
+
+        .start-button {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .start-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        /* ... (previous styles remain the same) ... */
+
+        /* Certificate Styles */
+        .certificate-container {
+            width: 800px;
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
+            border: 2px solid gold;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+
+        .certificate-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 2px solid gold;
+            margin: 10px;
+            pointer-events: none;
+            border-radius: 8px;
+        }
+
+        .certificate-header {
+            margin-bottom: 20px;
+        }
+
+        .certificate-title {
+            font-size: 36px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .certificate-subtitle {
+            font-size: 24px;
+            color: #34495e;
+            margin-bottom: 30px;
+            font-family: Arial, sans-serif;
+        }
+
+        .certificate-body {
+            margin: 30px 0;
+            line-height: 1.6;
+        }
+
+        .recipient-name {
+            font-size: 28px;
+            color: #2c3e50;
+            margin: 20px 0;
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+
+        .completion-text {
+            font-size: 18px;
+            color: #34495e;
+            margin: 20px 0;
+        }
+
+        .score-text {
+            font-size: 24px;
+            color: #27ae60;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .date-text {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin: 15px 0;
+        }
+
+        .certificate-footer {
+            margin-top: 40px;
+            border-top: 2px solid #bdc3c7;
+            padding-top: 20px;
+        }
+
+        .signature-line {
+            width: 200px;
+            border-top: 1px solid #34495e;
+            margin: 10px auto;
+        }
+
+        .signature-text {
+            font-size: 16px;
+            color: #34495e;
+        }
+
+        .certificate-seal {
+            position: absolute;
+            bottom: 30px;
+            right: 40px;
+            width: 100px;
+            height: 100px;
+            border: 2px solid #e74c3c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #e74c3c;
+            transform: rotate(-15deg);
+            opacity: 0.8;
+        }
+
+        .print-button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .print-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .certificate-container, .certificate-container * {
+                visibility: visible;
+            }
+            .certificate-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                box-shadow: none;
+            }
+            .print-button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-particles" id="particles"></div>
+    <div class="container">
+        <div class="start-screen" id="startScreen">
+            <h1>Test Your Knowledge</h1>
+            <input type="text" class="name-input" id="participantName" placeholder="Enter your name" required>
+            <button class="start-button" onclick="startQuiz()">START QUIZ</button>
+        </div>
+
+        <div id="quizSection" style="display: none;">
+            <!-- ... (previous quiz content remains the same) ... -->
+        </div>
+
+        <!-- Certificate Section -->
+        <div class="certificate-container" id="certificateSection">
+            <div class="certificate-border"></div>
+            <div class="certificate-header">
+                <h1 class="certificate-title">Certificate of Completion</h1>
+                <div class="certificate-subtitle">JavaScript Knowledge Assessment</div>
+            </div>
+            
+            <div class="certificate-body">
+                <p class="completion-text">This is to certify that</p>
+                <div class="recipient-name" id="recipientName"></div>
+                <p class="completion-text">has successfully completed the JavaScript Quiz</p>
+                <p class="score-text" id="scoreText"></p>
+                <p class="date-text" id="dateText"></p>
+            </div>
+            
+            <div class="certificate-footer">
+                <div class="signature-line"></div>
+                <p class="signature-text">Quiz Administrator</p>
+            </div>
+            
+            <div class="certificate-seal">
+                CERTIFIED
+            </div>
+        </div>
+        <button class="print-button" id="printButton" onclick="printCertificate()" style="display: none;">
+            Print Certificate
+        </button>
+    </div>
+
+    <script>
+        // ... (previous JavaScript code remains the same until submitQuiz function) ...
+
+        function submitQuiz() {
+            clearInterval(timerInterval);
+            
+            const correctAnswers = {
+                q1: "Object-Based",
+                q2: "block that combines a number of statements into a single compound statement",
+                q3: "Declaration statements",
+                q4: "Mutable variable",
+                q5: "Division by zero",
+                q6: "valueOf()",
+                q7: "Both are equal in the value and data type."
+            };
+            
+            let score = 0;
+            let results = '<h2>Quiz Results</h2><div class="score-card">';
+
+            for (const [question, answer] of Object.entries(correctAnswers)) {
+                const selected = document.querySelector(`input[name="${question}"]:checked`);
+                if (selected && selected.value === answer) {
+                    score++;
+                    results += `<p class="correct-answer">Question ${question.slice(1)}: Correct!</p>`;
+                } else {
+                    results += `<p class="incorrect-answer">Question ${question.slice(1)}: Incorrect. Correct answer: ${answer}</p>`;
+                }
+            }
+
+            results += `<h3>Final Score: ${score} out of ${Object.keys(correctAnswers).length}</h3></div>`;
+            document.getElementById('quizResult').innerHTML = results;
+
+            // Show and update certificate
+            const certificateSection = document.getElementById('certificateSection');
+            const printButton = document.getElementById('printButton');
+            const participantName = document.getElementById('participantName').value || 'Participant';
+            
+            document.getElementById('recipientName').textContent = participantName;
+            document.getElementById('scoreText').textContent = `Score: ${score} out of ${Object.keys(correctAnswers).length}`;
+            document.getElementById('dateText').textContent = `Awarded on ${new Date().toLocaleDateString()}`;
+            
+            certificateSection.style.display = 'block';
+            printButton.style.display = 'block';
+
+            // Chart creation code remains the same
+            let scoreData = [score, Object.keys(correctAnswers).length - score];
+            const chartContainer = document.getElementById('scoreChart');
+            const ctx = chartContainer.getContext("2d");
+
+            new Chart(ctx, {
+                type:'bar',
+                data: {
+                    labels: ['Correct', 'Incorrect'],
+                    datasets: [{
+                        label: 'Quiz Result',
+                        data: scoreData,
+                        backgroundColor: ['green', 'red'],
+                        borderColor: ['green', 'red'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: Object.keys(correctAnswers).length
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function printCertificate() {
+            window.print();
+        }
+
+        // ... (rest of the JavaScript code remains the same) ...
+    </script>
+</body>
+</html>

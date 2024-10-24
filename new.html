@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js.js"></script>
+    <link rel="css.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 600px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        .canvas2 {
+  position: fixed;
+  width: 100%;
+  height: 170%;
+}
+
+a {
+  position: absolute;
+  bottom: 2vmin;
+  right: 2vmin;
+  color: rgba(255,255,255,0.2);
+  text-decoration: none;
+}
+
+a:hover {
+  color: #fff;
+}
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .options label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .options input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .submit-button {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .result {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .score-card {
+            margin-top: 10px;
+        }
+
+        .correct-answer {
+            color: green;
+        }
+
+        .incorrect-answer {
+            color: red;
+        }
+        .start button {
+    /* Additional styling for your button */
+    position: absolute;
+    left: 43.5%;
+    top: 40%;
+    background-color: #FF9400;
+    width: 9rem;
+    height: 4rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-left: 30px;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+    background-image: linear-gradient(to bottom, #FFB84D, #FF9400);
+}
+
+.start button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.start button:active {
+    transform: scale(0.95);
+    background-image: linear-gradient(to bottom, #FF9400, #FFB84D);
+}
+.incorrect-answer {
+        color: red;
+        font-weight: bold;
+    }
+    .correct-answer {
+        color: green;
+        font-weight: bold;
+    }
+
+    </style>
+</head>
+<body>
+    <canvas class="canvas2"></canvas>
+    <div class="start">
+    <button onclick="startQuiz()" style="background-color: #FF9400; width: 9rem; height: 4rem; font-size: 1.5rem; font-weight: 700; margin-left: 30px; cursor: pointer;">Start Test</button>
+</div>
+    <div class="container" style="margin-top: 40px; left: 50%;">
+        <h1 style="font-weight: 900; font-size: 3rem;">Demo Test</h1>
+        <div id="quizSection" style="display: none;">
+            <p id="timer" style="float: right; margin-top: -30px; background-color: darkgrey; width: 11rem; height: 2.5rem; font-size: 1.1rem; font-weight: 800; text-align: center; padding-top: 10px; border-radius: 40px;">Time Left: 1:00</p>
+        <!-- </div> -->
+            <audio id="timerSound" src="sound.mp3"></audio>
+        <form id="quizForm">
+            <div class="question">
+                <p>1. What is the capital of France?</p>
+                <div class="options">
+                    <label>
+                        <input type="radio" name="q1" value="Paris"> Paris
+                    </label>
+                    <label>
+                        <input type="radio" name="q1" value="London"> London
+                    </label>
+                    <label>
+                        <input type="radio" name="q1" value="Madrid"> Madrid
+                    </label>
+                    <label>
+                        <input type="radio" name="q1" value="Berlin"> Berlin
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <p>2. Which programming language is known for building dynamic web pages?</p>
+                <div class="options">
+                    <label>
+                        <input type="radio" name="q2" value="Java"> Java
+                    </label>
+                    <label>
+                        <input type="radio" name="q2" value="Python"> Python
+                    </label>
+                    <label>
+                        <input type="radio" name="q2" value="JavaScript"> JavaScript
+                    </label>
+                    <label>
+                        <input type="radio" name="q2" value="C++"> C++
+                    </label>
+                </div>
+            </div>
+            <div class="question">
+                <p>3. Who wrote the play "Romeo and Juliet"?</p>
+                <div class="options">
+                    <label>
+                        <input type="radio" name="q3" value="Shakespeare"> William Shakespeare
+                    </label>
+                    <label>
+                        <input type="radio" name="q3" value="Hemingway"> Ernest Hemingway
+                    </label>
+                    <label>
+                        <input type="radio" name="q3" value="Austen"> Jane Austen
+                    </label>
+                    <label>
+                        <input type="radio" name="q3" value="Twain"> Mark Twain
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <p>4. What is the capital of Japan?</p>
+                <div class="options">
+                    <label>
+                        <input type="radio" name="q4" value="Beijing"> Beijing
+                    </label>
+                    <label>
+                        <input type="radio" name="q4" value="Seoul"> Seoul
+                    </label>
+                    <label>
+                        <input type="radio" name="q4" value="Tokyo"> Tokyo
+                    </label>
+                    <label>
+                        <input type="radio" name="q4" value="Bangkok"> Bangkok
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <p>5. Who painted the Mona Lisa?</p>
+                <div class="options">
+                    <label>
+                        <input type="radio" name="q5" value="VanGogh"> Vincent van Gogh
+                    </label>
+                    <label>
+                        <input type="radio" name="q5" value="DaVinci"> Leonardo da Vinci
+                    </label>
+                    <label>
+                        <input type="radio" name="q5" value="Picasso"> Pablo Picasso
+                    </label>
+                    <label>
+                        <input type="radio" name="q5" value="Rembrandt"> Rembrandt
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <p>6. What is the chemical symbol for gold?</p>
+                <div class="options">
+                    <label>
+                        <input type="radio" name="q6" value="Au"> Au
+                    </label>
+                    <label>
+                        <input type="radio" name="q6" value="Ag"> Ag
+                    </label>
+                    <label>
+                        <input type="radio" name="q6" value="Fe"> Fe
+                    </label>
+                    <label>
+                        <input type="radio" name="q6" value="Cu"> Cu
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <p>7. In which year did the Titanic sink?</p>
+                <div class="options">
+                    <label>
+                        <input type="radio" name="q7" value="1912"> 1912
+                    </label>
+                    <label>
+                        <input type="radio" name="q7" value="1920"> 1920
+                    </label>
+                    <label>
+                        <input type="radio" name="q7" value="1935"> 1935
+                    </label>
+                    <label>
+                        <input type="radio" name="q7" value="1941"> 1941
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <p>8. What is the largest mammal on Earth?</p>
+                <div class="options">
+                    <label>
+                        <input type="radio" name="q8" value="Elephant"> Elephant
+                    </label>
+                    <label>
+                        <input type="radio" name="q8" value="BlueWhale"> Blue Whale
+                    </label>
+                    <label>
+                        <input type="radio" name="q8" value="Giraffe"> Giraffe
+                    </label>
+                    <label>
+                        <input type="radio" name="q8" value="Hippopotamus"> Hippopotamus
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <p>9. Who developed the theory of relativity?</p>
+                <div class="options">
+                    <label>
+                        <input type="radio" name="q9" value="Newton"> Isaac Newton
+                    </label>
+                    <label>
+                        <input type="radio" name="q9" value="Einstein"> Albert Einstein
+                    </label>
+                    <label>
+                        <input type="radio" name="q9" value="Galileo"> Galileo Galilei
+                    </label>
+                    <label>
+                        <input type="radio" name="q9" value="Curie"> Marie Curie
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <p>10. What is the currency of Brazil?</p>
+                <div class="options">
+                    <label>
+                        <input type="radio" name="q10" value="Euro"> Euro
+                    </label>
+                    <label>
+                        <input type="radio" name="q10" value="Dollar"> US Dollar
+                    </label>
+                    <label>
+                        <input type="radio" name="q10" value="Real"> Brazilian Real
+                    </label>
+                    <label>
+                        <input type="radio" name="q10" value="Peso"> Peso
+                    </label>
+                </div>
+            </div>
+             
+            
+
+
+            <div class="submit-button">
+                <button type="button" onclick="submitQuiz()" style="background-color: #FF9400; width: 7rem; height: 2rem; font-size: 1rem; font-weight: 700; margin-left: 30px; cursor: pointer;">Submit Now</button>
+            </div>
+
+            <div class="result" id="quizResult"></div>
+
+            <canvas id="scoreChart" style="height: 300px; margin-top: 20px;"></canvas>
+        </form>
+    </div>
+    <script>
+        let timerInterval;
+        const timerSound = new Audio('sound.mp3'); // Adjust the file name/path accordingly
+        
+        function startQuiz() {
+            const startButton = document.querySelector('button');
+            const quizSection = document.getElementById('quizSection');
+            const timerElement = document.getElementById('timer');
+            const quizForm = document.getElementById('quizForm');
+            const resultElement = document.getElementById("quizResult");
+            const chartContainer = document.getElementById("scoreChart");
+        
+            // Hide start button and show quiz section
+            startButton.style.display = 'none';
+            quizSection.style.display = 'block';
+            canvas.style.display = 'none';
+        
+            // Initialize timer with 1 minute
+            updateTimerDisplay(61, timerElement);
+        
+            // Start the timer
+            let endTime = new Date().getTime() + 62000; // End time in milliseconds (current time + 1 minute)
+            timerInterval = setInterval(function() {
+                let currentTime = new Date().getTime();
+                let secondsLeft = Math.round((endTime - currentTime) / 1000);
+                if (secondsLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz();
+                    window.scrollTo(0, document.body.scrollHeight);
+                } else {
+                    updateTimerDisplay(secondsLeft, timerElement);
+                    // Play sound when 10 seconds left
+                    if (secondsLeft === 12) {
+                        timerSound.play();
+                    }
+                }
+            }, 1000);
+        
+            // Functionality for submit button
+            quizForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                clearInterval(timerInterval); // Stop the timer
+                timerSound.pause(); // Pause the sound if it's playing
+                submitQuiz();
+            });
+        }
+        
+        function updateTimerDisplay(secondsLeft, timerElement) {
+            const minutes = Math.floor(secondsLeft / 60);
+            const seconds = secondsLeft % 60;
+            timerElement.textContent = `Time Left: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+        
+        function submitQuiz() {
+             
+        }
+        </script>
+        
+        
+        
+        
+  <script>
+   function submitQuiz() {
+    clearInterval(timerInterval);
+    timerSound.pause();
+    timerSound.currentTime = 0;
+
+    const form = document.getElementById("quizForm");
+    const resultElement = document.getElementById("quizResult");
+    const chartContainer = document.getElementById("scoreChart");
+
+    const correctAnswers = {
+    q1: "Paris",
+    q2: "JavaScript",
+    q3: "William Shakespeare",
+    q4: "Tokyo",
+    q5: "Leonardo da Vinci",
+    q6: "Au",
+    q7: "1912",
+    q8: "Blue Whale",
+    q9: "Albert Einstein",
+    q10: "Brazilian Real"
+};
+
+let score = 0;
+    let scoreCardHTML = "<div class='score-card'><h2>Scorecard</h2><ul>";
+
+    for (const question in correctAnswers) {
+        const radioButtons = form.elements[question];
+
+        let anyChecked = false;
+
+        for (let i = 0; i < radioButtons.length; i++) {
+            if (radioButtons[i].checked) {
+                anyChecked = true;
+                const selectedAnswer = radioButtons[i].nextSibling.nodeValue.trim(); // Get the text content of the label
+
+                if (selectedAnswer === correctAnswers[question]) {
+                    score++;
+                    radioButtons[i].parentNode.classList.add('correct-answer');
+                } else {
+                    // Add a class to the parent label of the incorrect option
+                    radioButtons[i].parentNode.classList.add('incorrect-answer');
+                    scoreCardHTML += `<span class='incorrect-answer'>Incorrect</span> (${correctAnswers[question]})</li>`;
+                }
+            break;
+        }
+    }
+
+    if (!anyChecked) {
+        scoreCardHTML += `<li>${question}: <span class='incorrect-answer'>Incorrect</span> (No answer provided)</li>`;
+    }
+}
+
+scoreCardHTML += "</ul></div>";
+let scoreData = [score, Object.keys(correctAnswers).length - score];
+
+// Step 2: Verify if the canvas element is accessible
+console.log("Chart container:", chartContainer);
+
+const ctx = chartContainer.getContext("2d");
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Correct', 'Incorrect'],
+        datasets: [{
+            label: 'Quiz Result',
+            data: scoreData,
+            backgroundColor: ['green', 'red'],
+            borderColor: ['green', 'red'],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: Object.keys(correctAnswers).length
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            },
+            chartAreaBorder: {
+                borderColor: 'red',
+                borderWidth: 2,
+                borderDash: [ 5, 5 ],
+                borderDashOffset: 2,
+            }
+        }
+    }
+});
+
+resultElement.innerHTML = `<div class='result'>Your score: ${score} out of ${Object.keys(correctAnswers).length}</div>`;
+}
+
+</script>
+
+<!--bacground js-->
+<script>
+const STAR_COLOR = '#fff';
+const STAR_SIZE = 3;
+const STAR_MIN_SCALE = 0.2;
+const OVERFLOW_THRESHOLD = 50;
+const STAR_COUNT = ( window.innerWidth + window.innerHeight ) / 5;
+
+const canvas = document.querySelector( 'canvas' ),
+  context = canvas.getContext( '2d' );
+
+let scale = 1, // device pixel ratio
+width,
+height;
+
+let stars = [];
+
+let pointerX,
+pointerY;
+
+let velocity = { x: 0, y: 0, tx: 0, ty: 0, z: 0.0005 };
+
+let touchInput = false;
+
+generate();
+resize();
+step();
+
+window.onresize = resize;
+
+function generate() {
+
+for( let i = 0; i < STAR_COUNT; i++ ) {
+stars.push({
+  x: 0,
+  y: 0,
+  z: STAR_MIN_SCALE + Math.random() * ( 1 - STAR_MIN_SCALE )
+});
+}
+
+}
+
+function placeStar( star ) {
+
+star.x = Math.random() * width;
+star.y = Math.random() * height;
+
+}
+
+function recycleStar( star ) {
+
+let direction = 'z';
+
+let vx = Math.abs( velocity.x ),
+    vy = Math.abs( velocity.y );
+
+if( vx > 1 || vy > 1 ) {
+let axis;
+
+if( vx > vy ) {
+  axis = Math.random() < vx / ( vx + vy ) ? 'h' : 'v';
+}
+else {
+  axis = Math.random() < vy / ( vx + vy ) ? 'v' : 'h';
+}
+
+if( axis === 'h' ) {
+  direction = velocity.x > 0 ? 'l' : 'r';
+}
+else {
+  direction = velocity.y > 0 ? 't' : 'b';
+}
+}
+
+star.z = STAR_MIN_SCALE + Math.random() * ( 1 - STAR_MIN_SCALE );
+
+if( direction === 'z' ) {
+star.z = 0.1;
+star.x = Math.random() * width;
+star.y = Math.random() * height;
+}
+else if( direction === 'l' ) {
+star.x = -OVERFLOW_THRESHOLD;
+star.y = height * Math.random();
+}
+else if( direction === 'r' ) {
+star.x = width + OVERFLOW_THRESHOLD;
+star.y = height * Math.random();
+}
+else if( direction === 't' ) {
+star.x = width * Math.random();
+star.y = -OVERFLOW_THRESHOLD;
+}
+else if( direction === 'b' ) {
+star.x = width * Math.random();
+star.y = height + OVERFLOW_THRESHOLD;
+}
+
+}
+
+function resize() {
+
+scale = window.devicePixelRatio || 1;
+
+width = window.innerWidth * scale;
+height = window.innerHeight * scale;
+
+canvas.width = width;
+canvas.height = height;
+
+stars.forEach( placeStar );
+
+}
+
+function step() {
+
+context.clearRect( 0, 0, width, height );
+
+update();
+render();
+
+requestAnimationFrame( step );
+
+}
+
+function update() {
+
+velocity.tx *= 0.96;
+velocity.ty *= 0.96;
+
+velocity.x += ( velocity.tx - velocity.x ) * 0.8;
+velocity.y += ( velocity.ty - velocity.y ) * 0.8;
+
+stars.forEach( ( star ) => {
+
+star.x += velocity.x * star.z;
+star.y += velocity.y * star.z;
+
+star.x += ( star.x - width/2 ) * velocity.z * star.z;
+star.y += ( star.y - height/2 ) * velocity.z * star.z;
+star.z += velocity.z;
+
+// recycle when out of bounds
+if( star.x < -OVERFLOW_THRESHOLD || star.x > width + OVERFLOW_THRESHOLD || star.y < -OVERFLOW_THRESHOLD || star.y > height + OVERFLOW_THRESHOLD ) {
+  recycleStar( star );
+}
+} );
+}
+function render() {
+
+stars.forEach( ( star ) => {
+
+context.beginPath();
+context.lineCap = 'round';
+context.lineWidth = STAR_SIZE * star.z * scale;
+context.globalAlpha = 0.5 + 0.5*Math.random();
+context.strokeStyle = STAR_COLOR;
+context.beginPath();
+context.moveTo( star.x, star.y );
+
+var tailX = velocity.x * 2,
+    tailY = velocity.y * 2;
+
+// stroke() wont work on an invisible line
+if( Math.abs( tailX ) < 0.1 ) tailX = 0.5;
+if( Math.abs( tailY ) < 0.1 ) tailY = 0.5;
+
+context.lineTo( star.x + tailX, star.y + tailY );
+context.stroke();
+} );
+}
+function movePointer( x, y ) {
+
+if( typeof pointerX === 'number' && typeof pointerY === 'number' ) {
+
+let ox = x - pointerX,
+    oy = y - pointerY;
+velocity.tx = velocity.tx + ( ox / 8*scale ) * ( touchInput ? 1 : -1 );
+velocity.ty = velocity.ty + ( oy / 8*scale ) * ( touchInput ? 1 : -1 );
+}
+pointerX = x;
+pointerY = y;
+}
+function onMouseMove( event ) {
+touchInput = false;
+movePointer( event.clientX, event.clientY );
+}
+function onTouchMove( event ) {
+touchInput = true;
+movePointer( event.touches[0].clientX, event.touches[0].clientY, true );
+event.preventDefault();
+}
+function onMouseLeave() {
+pointerX = null;
+pointerY = null;
+}
+</script>
+</body>
+</html>

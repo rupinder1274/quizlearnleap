@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.7.0/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a3e, #4a148c);
+            color: #fff;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .start-button {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .start-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .timer {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            text-align: center;
+            display: inline-block;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .question {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .question:hover {
+            transform: translateX(10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .question p {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .options {
+            display: grid;
+            gap: 0.8rem;
+        }
+
+        .options label {
+            display: block;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .options label:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .options input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .submit-button {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .submit-button button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-button button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .result {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            margin-top: 2rem;
+        }
+
+        .score-card {
+            margin-top: 2rem;
+        }
+
+        .score-card h2 {
+            margin-bottom: 1rem;
+        }
+
+        .correct-answer {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .incorrect-answer {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        #scoreChart {
+            background: rgba(251, 249, 249, 0.05);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+            100% { transform: translateY(0px) rotate(360deg); }
+        }
+
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 8s infinite;
+        }
+
+        .certificate {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            margin-top: 2rem;
+            border: 5px solid #4CAF50;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .certificate::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.2);
+            z-index: 1;
+            border-radius: 15px;
+            filter: blur(10px);
+        }
+
+        .certificate h1 {
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .certificate p {
+            position: relative;
+            z-index: 2;
+            font-size: 1.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .print-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .print-button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-particles" id="particles"></div>
+    <div class="container">
+        <div class="start-screen" id="startScreen">
+            <h1>Test Your Knowledge</h1>
+            <button class="start-button" onclick="startQuiz()">START QUIZ</button>
+        </div>
+
+        <div id="quizSection" style="display: none;">
+            <div class="timer" id="timer">Time Left: 1:00</div>
+            <form id="quizForm">
+                <div class="question">
+                    <p>1. Which type of JavaScript language is ___?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q1" value="Object-Oriented">Object-Oriented</label>
+                        <label><input type="radio" name="q1" value="Object-Based">Object-Based</label>
+                        <label><input type="radio" name="q1" value="Object-Based">Object-Based</label>
+                        <label><input type="radio" name="q1" value="High-level">High-level</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p>2. In JavaScript, what is a block of statement?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q2" value="Conditional">Conditional</label>
+                        <label><input type="radio" name="q2" value="Block">Block</label>
+                        <label><input type="radio" name="q2" value="Sequence">Sequence</label>
+                        <label><input type="radio" name="q2" value="Function">Function</label>
+                    </div>
+                </div>
+
+                <div class="submit-button">
+                    <button type="button" onclick="submitQuiz()">Submit Quiz</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="result" id="resultSection" style="display: none;">
+            <h2>Your Results</h2>
+            <div class="score-card">
+                <h3>Score: <span id="finalScore"></span></h3>
+            </div>
+            <canvas id="scoreChart"></canvas>
+            <button onclick="showCertificate()">Show Certificate</button>
+        </div>
+
+        <div class="certificate" id="certificateSection">
+            <h2>Certificate of Completion</h2>
+            <p>This certifies that</p>
+            <h1 id="userName" style="color: #ffcc00; font-size: 2.5rem; margin: 1rem 0;"></h1>
+            <p>has completed the quiz with a score of</p>
+            <h1 id="finalScore" style="color: #4CAF50; font-size: 2.5rem; margin: 1rem 0;"></h1>
+            <p style="font-size: 1.2rem;">Awarded on <span id="dateAwarded"></span></p>
+            <button class="print-button" onclick="printCertificate()">Print Certificate</button>
+        </div>
+    </div>
+
+    <script>
+        let timer;
+        let timeLeft = 60;
+        let score = 0;
+        const totalQuestions = 2; // Update this according to the number of questions
+
+        function startQuiz() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('quizSection').style.display = 'block';
+            startTimer();
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = `Time Left: ${Math.floor(timeLeft / 60)}:${timeLeft % 60 < 10 ? '0' + (timeLeft % 60) : timeLeft % 60}`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    submitQuiz();
+                }
+            }, 1000);
+        }
+
+        function submitQuiz() {
+            clearInterval(timer);
+            const form = document.getElementById('quizForm');
+            const answers = {
+                q1: 'Object-Oriented', // Correct answer for question 1
+                q2: 'Block' // Correct answer for question 2
+            };
+            const userAnswers = {
+                q1: form.q1.value,
+                q2: form.q2.value
+            };
+            score = 0;
+
+            for (let question in answers) {
+                if (answers[question] === userAnswers[question]) {
+                    score++;
+                }
+            }
+
+            document.getElementById('finalScore').textContent = `${score} / ${totalQuestions}`;
+            document.getElementById('quizSection').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'block';
+            displayChart();
+            document.getElementById('dateAwarded').textContent = new Date().toLocaleDateString();
+        }
+
+        function displayChart() {
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Correct', 'Incorrect'],
+                    datasets: [{
+                        label: 'Score',
+                        data: [score, totalQuestions - score],
+                        backgroundColor: ['#4CAF50', '#ff6b6b'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        }
+                    }
+                }
+            });
+        }
+
+        function showCertificate() {
+            const userName = prompt("Please enter your name:");
+            document.getElementById('userName').textContent = userName || "Anonymous";
+            document.getElementById('certificateSection').style.display = 'block';
+        }
+
+        function printCertificate() {
+            
+            printWindow.print();
+        }
+    </script>
+</body>
+</html>
